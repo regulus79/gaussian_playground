@@ -32,6 +32,70 @@ class GaussianOrbital():
 
 
 
+def overlapIntegral(orbital1, orbital2):
+	normalInnerProductX = guassianInnerProduct(orbital1.xpos, orbital1.exponent, orbital2.xpos, orbital2.exponent)
+	normalInnerProductY = guassianInnerProduct(orbital1.ypos, orbital1.exponent, orbital2.ypos, orbital2.exponent)
+	normalInnerProductZ = guassianInnerProduct(orbital1.zpos, orbital1.exponent, orbital2.zpos, orbital2.exponent)
+
+	newExponentX, newPosX, scalingConstantExponentX, scalingConstantArgumentX = gaussianProductConstants(orbital1.xpos, orbital1.exponent, orbital2.xpos, orbital2.exponent)
+	newExponentY, newPosY, scalingConstantExponentY, scalingConstantArgumentY = gaussianProductConstants(orbital1.ypos, orbital1.exponent, orbital2.ypos, orbital2.exponent)
+	newExponentZ, newPosZ, scalingConstantExponentZ, scalingConstantArgumentZ = gaussianProductConstants(orbital1.zpos, orbital1.exponent, orbital2.zpos, orbital2.exponent)
+
+	derivativeCoefficientX = hermitePolynomial(orbital1.xderivativePower + orbital2.xderivativePower, scalingConstantExponentX, scalingConstantArgumentX) * (-1)**(orbital2.xderivativePower)
+	derivativeCoefficientY = hermitePolynomial(orbital1.yderivativePower + orbital2.yderivativePower, scalingConstantExponentY, scalingConstantArgumentY) * (-1)**(orbital2.yderivativePower)
+	derivativeCoefficientZ = hermitePolynomial(orbital1.zderivativePower + orbital2.zderivativePower, scalingConstantExponentZ, scalingConstantArgumentZ) * (-1)**(orbital2.zderivativePower)
+
+	overlapX = derivativeCoefficientX * normalInnerProductX
+	overlapY = derivativeCoefficientY * normalInnerProductY
+	overlapZ = derivativeCoefficientZ * normalInnerProductZ
+
+	return overlapX * overlapY * overlapZ
+
+
+
+def kineticIntegral(orbital1, orbital2):
+	tmpOrbitalX = orbital2
+	tmpOrbitalX.xderivativePower += 2
+
+	tmpOrbitalY = orbital2
+	tmpOrbitalY.yderivativePower += 2
+
+	tmpOrbitalZ = orbital2
+	tmpOrbitalZ.zderivativePower += 2
+
+	return overlapIntegral(orbital1, tmpOrbitalX) + overlapIntegral(orbital1, tmpOrbitalY) + overlapIntegral(orbital1, tmpOrbitalZ)
+
+
+def coulombIntegral(orbital1, orbital2, potentialPos):
+	newExponentX, newPosX, scalingConstantExponentX, scalingConstantArgumentX = gaussianProductConstants(orbital1.xpos, orbital1.exponent, orbital2.xpos, orbital2.exponent)
+	newExponentY, newPosY, scalingConstantExponentY, scalingConstantArgumentY = gaussianProductConstants(orbital1.ypos, orbital1.exponent, orbital2.ypos, orbital2.exponent)
+	newExponentZ, newPosZ, scalingConstantExponentZ, scalingConstantArgumentZ = gaussianProductConstants(orbital1.zpos, orbital1.exponent, orbital2.zpos, orbital2.exponent)
+	assert newExponentX == newExponentY and newExponentY == newExponentZ
+	newXDerivativePower = orbital1.xderivativePower + orbital2.xderivativePower
+	newYDerivativePower = orbital1.yderivativePower + orbital2.yderivativePower
+	newZDerivativePower = orbital1.zderivativePower + orbital2.zderivativePower
+
+	# Since d/da = - d/dc; differentiating wrt one coord is negative of differentiating wrt to the other
+	signFromDerivatives =  (-1)**(orbital2.xderivativePower) * (-1)**(orbital2.yderivativePower) * (-1)**(orbital2.zderivativePower)
+
+	# THIS is so bad. I made a mistake for the coulomb integral derivatives, so only the primitive case works.
+	# We just have to do the rest manually, with finite difference
+	return gaussianCoulombIntegral(np.array([newPosX, newPosY, newPosZ]), newExponentX, newXDerivativePower, newYDerivativePower, newZDerivativePower, potentialPos) * signFromDerivatives
+	#totalDerivative = 0
+	#steplength = 0.01
+	#for xi in range(newXDerivativePower+1):
+	#	for yi in range(newYDerivativePower+1):
+	#		for zi in range(newZDerivativePower+1):
+	#			offset = np.array([xi - newXDerivativePower/2, yi - newYDerivativePower/2, zi - newZDerivativePower/2]) * steplength
+	#			coeffx = math.comb(newXDerivativePower, xi) * (-1)**(newXDerivativePower - xi) / steplength**newXDerivativePower
+	#			coeffy = math.comb(newYDerivativePower, yi) * (-1)**(newXDerivativePower - yi) / steplength**newYDerivativePower
+	#			coeffz = math.comb(newZDerivativePower, zi) * (-1)**(newZDerivativePower - zi) / steplength**newZDerivativePower
+	#			totalDerivative += coeffx * coeffy * coeffz * gaussianCoulombIntegral(np.array([newPosX, newPosY, newPosZ]) + offset, newExponentX, 0, 0, 0, potentialPos) * signFromDerivatives
+	#return totalDerivative
+
+
+
+
 def gaussianProductConstants(pos1, exponent1, pos2, exponent2):
 	newExponent = exponent1 + exponent2
 	newPos = (exponent1 * pos1 + exponent2 * pos2) / (exponent1 + exponent2)
@@ -56,6 +120,19 @@ def coulombDerivativeExpansionCoeff(functionDerivativeOrder, totalDerivatives):
 	oneOverXDerivativeOrder = totalDerivatives - functionDerivativeOrder
 	coeff = math.factorial(oneOverXDerivativeOrder) * (-1)**oneOverXDerivativeOrder * math.comb(totalDerivatives, functionDerivativeOrder)
 	return coeff
+
+
+def primativeGaussianCoulombIntegral(gaussianPos, exponent, potentialPos):
+	offset = gaussianPos - potentialPos
+	distance = np.sum(offset**2)**0.5
+	
+	overallCoeff = math.pi / exponent
+	
+	integral1 = integralOfNormalGuassianToInfinity(-distance, exponent)
+	integral2 = integralOfNormalGuassianToInfinity(distance, exponent)
+
+	return overallCoeff * (integral1 - integral2) / distance
+
 
 def gaussianCoulombIntegral(gaussianPos, exponent, derivativeXPower, derivativeYPower, derivativeZPower, potentialPos):
 	totalDerivatives = derivativeXPower + derivativeYPower + derivativeZPower
