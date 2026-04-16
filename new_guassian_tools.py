@@ -2,7 +2,15 @@ import math
 import numpy as np
 
 
-def derivativeOfTwoOrbitalFunc(func, orbital1, orbital2, derivatives1, derivatives2, steplength, *args):
+def derivativeOfTwoGaussianFunc(func, orbital1, orbital2, derivatives1, derivatives2, steplength, *args):
+	# Sign flips since we are differentiating wrt to the gaussian centers, not x technically
+	signFromX1Derivative = (-1)**derivatives1[0]
+	signFromY1Derivative = (-1)**derivatives1[1]
+	signFromZ1Derivative = (-1)**derivatives1[2]
+	signFromX2Derivative = (-1)**derivatives2[0]
+	signFromY2Derivative = (-1)**derivatives2[1]
+	signFromZ2Derivative = (-1)**derivatives2[2]
+	totalSign = signFromX1Derivative * signFromY1Derivative * signFromZ1Derivative * signFromX2Derivative * signFromY2Derivative * signFromZ2Derivative
 	totalDerivative = 0
 	for x1 in range(derivatives1[0] + 1):
 		for y1 in range(derivatives1[1] + 1):
@@ -27,7 +35,7 @@ def derivativeOfTwoOrbitalFunc(func, orbital1, orbital2, derivatives1, derivativ
 							print(coeffx1, coeffy1, coeffz1, coeffx2, coeffy2, coeffz2)
 							print(func(tmpOrbital1, tmpOrbital2, *args))
 							totalDerivative += coeffx1 * coeffy1 * coeffz1 * coeffx2 * coeffy2 * coeffz2 * func(tmpOrbital1, tmpOrbital2, *args)
-	return totalDerivative
+	return totalDerivative * totalSign
 
 
 
@@ -59,6 +67,13 @@ def primativeOverlapIntegral(orbital1, orbital2):
 	overlapY = primativeGuassianInnerProduct(orbital1.pos[1], orbital1.exponent, orbital2.pos[1], orbital2.exponent)
 	overlapZ = primativeGuassianInnerProduct(orbital1.pos[2], orbital1.exponent, orbital2.pos[2], orbital2.exponent)
 	return overlapX * overlapY * overlapZ
+
+# The laplacian is applied to the second argument
+def primativeKineticIntegral(orbital1, orbital2, steplength):
+	kineticX = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([2,0,0]), steplength)
+	kineticY = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([0,2,0]), steplength)
+	kineticZ = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([0,0,2]), steplength)
+	return kineticX + kineticY + kineticZ
 
 
 def integralOfNormalGuassianToInfinity(lowerBound, exponent):
