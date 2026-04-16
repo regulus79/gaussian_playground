@@ -22,10 +22,10 @@ class ContractedGaussian:
 
 
 
-def evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength):
-	return derivativeOfTwoGaussianFunc(func, hermiteGaussian1, hermiteGaussian2, hermiteGaussian1.xyzDerivativeOrders, hermiteGaussian2.xyzDerivativeOrders, steplength)
+def evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength, *args):
+	return derivativeOfTwoGaussianFunc(func, hermiteGaussian1, hermiteGaussian2, hermiteGaussian1.xyzDerivativeOrders, hermiteGaussian2.xyzDerivativeOrders, steplength, *args)
 
-def evalTwoOrbitalFunctionWithCartesianGaussians(func, cartesianGaussian1, cartesianGaussian2, steplength):
+def evalTwoOrbitalFunctionWithCartesianGaussians(func, cartesianGaussian1, cartesianGaussian2, steplength, *args):
 	xCoeffs1, yCoeffs1, zCoeffs1 = hermiteCoeffsFromCartesianGaussian(cartesianGaussian1)
 	xCoeffs2, yCoeffs2, zCoeffs2 = hermiteCoeffsFromCartesianGaussian(cartesianGaussian2)
 	#print(xCoeffs1, yCoeffs1, zCoeffs1)
@@ -46,20 +46,20 @@ def evalTwoOrbitalFunctionWithCartesianGaussians(func, cartesianGaussian1, carte
 							overallCoeff1 = x1coeff * y1coeff * z1coeff
 							hermiteGaussian2 = HermiteGaussian(cartesianGaussian2.pos, cartesianGaussian2.exponent, np.array([x2order, y2order, z2order]))
 							overallCoeff2 = x2coeff * y2coeff * z2coeff
-							#print(overallCoeff1 * overallCoeff2, evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength), overallCoeff1 * overallCoeff2 * evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength))
-							total += overallCoeff1 * overallCoeff2 * evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength)
+							#print(overallCoeff1 * overallCoeff2, evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength, *args), overallCoeff1 * overallCoeff2 * evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength))
+							total += overallCoeff1 * overallCoeff2 * evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength, *args)
 	return total
 
 
-def evalTwoOrbitalFunctionWithContractedGaussians(func, contractedGaussian1, contractedGaussian2, steplength):
+def evalTwoOrbitalFunctionWithContractedGaussians(func, contractedGaussian1, contractedGaussian2, steplength, *args):
 	total = 0
 	for i1, cartesianGaussian1 in enumerate(contractedGaussian1.cartesianGaussians):
 		for i2, cartesianGaussian2 in enumerate(contractedGaussian2.cartesianGaussians):
 			coeff1 = contractedGaussian1.coefficients[i1]
 			coeff2 = contractedGaussian2.coefficients[i2]
-			print(i1,i2, coeff1, coeff2, coeff1 * coeff2 * evalTwoOrbitalFunctionWithCartesianGaussians(func, cartesianGaussian1, cartesianGaussian2, steplength))
-			print(cartesianGaussian1.pos, cartesianGaussian1.exponent, cartesianGaussian2.pos, cartesianGaussian2.exponent)
-			total += coeff1 * coeff2 * evalTwoOrbitalFunctionWithCartesianGaussians(func, cartesianGaussian1, cartesianGaussian2, steplength)
+			#print(i1,i2, coeff1, coeff2, coeff1 * coeff2 * evalTwoOrbitalFunctionWithCartesianGaussians(func, cartesianGaussian1, cartesianGaussian2, steplength, *args))
+			#print(cartesianGaussian1.pos, cartesianGaussian1.exponent, cartesianGaussian2.pos, cartesianGaussian2.exponent)
+			total += coeff1 * coeff2 * evalTwoOrbitalFunctionWithCartesianGaussians(func, cartesianGaussian1, cartesianGaussian2, steplength, *args)
 	return total
 
 

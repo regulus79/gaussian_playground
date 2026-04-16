@@ -30,10 +30,10 @@ def derivativeOfTwoGaussianFunc(func, orbital1, orbital2, derivatives1, derivati
 							coeffx2 = math.comb(derivatives2[0], x2) * (-1)**(derivatives2[0] - x2) / steplength**derivatives2[0]
 							coeffy2 = math.comb(derivatives2[1], y2) * (-1)**(derivatives2[1] - y2) / steplength**derivatives2[1]
 							coeffz2 = math.comb(derivatives2[2], z2) * (-1)**(derivatives2[2] - z2) / steplength**derivatives2[2]
-							print("---", x1, y1, z1, x2, y2, z2)
-							print(tmpOrbital1.pos, tmpOrbital2.pos)
-							print(coeffx1, coeffy1, coeffz1, coeffx2, coeffy2, coeffz2)
-							print(func(tmpOrbital1, tmpOrbital2, *args))
+							#print("---", x1, y1, z1, x2, y2, z2)
+							#print(tmpOrbital1.pos, tmpOrbital2.pos)
+							#print(coeffx1, coeffy1, coeffz1, coeffx2, coeffy2, coeffz2)
+							#print(func(tmpOrbital1, tmpOrbital2, *args))
 							totalDerivative += coeffx1 * coeffy1 * coeffz1 * coeffx2 * coeffy2 * coeffz2 * func(tmpOrbital1, tmpOrbital2, *args)
 	return totalDerivative * totalSign
 
