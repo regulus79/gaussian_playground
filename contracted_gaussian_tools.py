@@ -1,34 +1,6 @@
 import numpy as np
 from new_guassian_tools import derivativeOfTwoGaussianFunc
 
-def evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength):
-	return derivativeOfTwoGaussianFunc(func, hermiteGaussian1, hermiteGaussian2, hermiteGaussian1.xyzDerivativeOrders, hermiteGaussian2.xyzDerivativeOrders, steplength)
-
-def evalTwoOrbitalFunctionWithCartesianGaussians(func, cartesianGaussian1, cartesianGaussian2, steplength):
-	xCoeffs1, yCoeffs1, zCoeffs1 = hermiteCoeffsFromCartesianGaussian(cartesianGaussian1)
-	xCoeffs2, yCoeffs2, zCoeffs2 = hermiteCoeffsFromCartesianGaussian(cartesianGaussian2)
-	print(xCoeffs1, yCoeffs1, zCoeffs1)
-	print(xCoeffs2, yCoeffs2, zCoeffs2)
-	total = 0
-	for x1order, x1coeff in enumerate(xCoeffs1):
-		for y1order, y1coeff in enumerate(yCoeffs1):
-			for z1order, z1coeff in enumerate(zCoeffs1):
-				for x2order, x2coeff in enumerate(xCoeffs2):
-					for y2order, y2coeff in enumerate(yCoeffs2):
-						for z2order, z2coeff in enumerate(zCoeffs2):
-							if x1coeff == 0 or y1coeff == 0 or z1coeff == 0 or x2coeff == 0 or y2coeff == 0 or z2coeff == 0:
-								continue
-							print("---")
-							print(x1order, y1order, z1order, x2order, y2order, z2order)
-							print(x1coeff, y1coeff, z1coeff, x2coeff, y2coeff, z2coeff)
-							hermiteGaussian1 = HermiteGaussian(cartesianGaussian1.pos, cartesianGaussian1.exponent, np.array([x1order, y1order, z1order]))
-							overallCoeff1 = x1coeff * y1coeff * z1coeff
-							hermiteGaussian2 = HermiteGaussian(cartesianGaussian2.pos, cartesianGaussian2.exponent, np.array([x2order, y2order, z2order]))
-							overallCoeff2 = x2coeff * y2coeff * z2coeff
-							print(overallCoeff1 * overallCoeff2, evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength), overallCoeff1 * overallCoeff2 * evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength))
-							total += overallCoeff1 * overallCoeff2 * evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength)
-	return total
-
 
 class HermiteGaussian:
 	def __init__(self, pos, exponent, xyzDerivativeOrders):
@@ -46,6 +18,50 @@ class ContractedGaussian:
 	def __init__(self, cartesianGaussians, coefficients):
 		self.cartesianGaussians = cartesianGaussians
 		self.coefficients = coefficients
+
+
+
+
+def evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength):
+	return derivativeOfTwoGaussianFunc(func, hermiteGaussian1, hermiteGaussian2, hermiteGaussian1.xyzDerivativeOrders, hermiteGaussian2.xyzDerivativeOrders, steplength)
+
+def evalTwoOrbitalFunctionWithCartesianGaussians(func, cartesianGaussian1, cartesianGaussian2, steplength):
+	xCoeffs1, yCoeffs1, zCoeffs1 = hermiteCoeffsFromCartesianGaussian(cartesianGaussian1)
+	xCoeffs2, yCoeffs2, zCoeffs2 = hermiteCoeffsFromCartesianGaussian(cartesianGaussian2)
+	#print(xCoeffs1, yCoeffs1, zCoeffs1)
+	#print(xCoeffs2, yCoeffs2, zCoeffs2)
+	total = 0
+	for x1order, x1coeff in enumerate(xCoeffs1):
+		for y1order, y1coeff in enumerate(yCoeffs1):
+			for z1order, z1coeff in enumerate(zCoeffs1):
+				for x2order, x2coeff in enumerate(xCoeffs2):
+					for y2order, y2coeff in enumerate(yCoeffs2):
+						for z2order, z2coeff in enumerate(zCoeffs2):
+							if x1coeff == 0 or y1coeff == 0 or z1coeff == 0 or x2coeff == 0 or y2coeff == 0 or z2coeff == 0:
+								continue
+							#print("---")
+							#print(x1order, y1order, z1order, x2order, y2order, z2order)
+							#print(x1coeff, y1coeff, z1coeff, x2coeff, y2coeff, z2coeff)
+							hermiteGaussian1 = HermiteGaussian(cartesianGaussian1.pos, cartesianGaussian1.exponent, np.array([x1order, y1order, z1order]))
+							overallCoeff1 = x1coeff * y1coeff * z1coeff
+							hermiteGaussian2 = HermiteGaussian(cartesianGaussian2.pos, cartesianGaussian2.exponent, np.array([x2order, y2order, z2order]))
+							overallCoeff2 = x2coeff * y2coeff * z2coeff
+							#print(overallCoeff1 * overallCoeff2, evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength), overallCoeff1 * overallCoeff2 * evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength))
+							total += overallCoeff1 * overallCoeff2 * evalTwoOrbitalFunctionWithHermiteGaussians(func, hermiteGaussian1, hermiteGaussian2, steplength)
+	return total
+
+
+def evalTwoOrbitalFunctionWithContractedGaussians(func, contractedGaussian1, contractedGaussian2, steplength):
+	total = 0
+	for i1, cartesianGaussian1 in enumerate(contractedGaussian1.cartesianGaussians):
+		for i2, cartesianGaussian2 in enumerate(contractedGaussian2.cartesianGaussians):
+			coeff1 = contractedGaussian1.coefficients[i1]
+			coeff2 = contractedGaussian2.coefficients[i2]
+			print(i1,i2, coeff1, coeff2, coeff1 * coeff2 * evalTwoOrbitalFunctionWithCartesianGaussians(func, cartesianGaussian1, cartesianGaussian2, steplength))
+			print(cartesianGaussian1.pos, cartesianGaussian1.exponent, cartesianGaussian2.pos, cartesianGaussian2.exponent)
+			total += coeff1 * coeff2 * evalTwoOrbitalFunctionWithCartesianGaussians(func, cartesianGaussian1, cartesianGaussian2, steplength)
+	return total
+
 
 
 # Matrix where you multiply it with a coefficient vector of gaussian derivatives, and it returns the vector of coeffs for cartesian gaussians. So the inverse does the opposite, cartesian to derivatives.
