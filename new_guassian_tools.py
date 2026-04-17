@@ -101,7 +101,7 @@ def primativeCoulombIntegral(orbital1, orbital2, potentialPos):
 	offset = productPos - potentialPos
 	distance = np.sum(offset**2)**0.5
 
-	unitsCoeff = charge_e / (4*math.pi*epsilon0)
+	unitsCoeff = charge_e**2 / (4*math.pi*epsilon0)
 	mathCoeff = math.pi / exponent * scalingFactorX * scalingFactorY * scalingFactorZ
 
 	if distance == 0:

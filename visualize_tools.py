@@ -5,6 +5,8 @@ from matplotlib import colors
 from skimage import measure
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
+from new_guassian_tools import *
+
 
 lattice_shape = (20, 20, 20)
 length_per_step = 3 / 20
@@ -14,11 +16,13 @@ scaleup = 1e10
 
 def plotOrbitals(contractedGaussians, coeffs, ax, quantile = 0.5):
 	allOrbitalPoses = []
+	allOrbitalExponents = []
 	for contractedGaussian in contractedGaussians:
 		allOrbitalPoses += [cartesianGaussian.pos*1.0 for cartesianGaussian in contractedGaussian.cartesianGaussians]
-	minBound = np.min(allOrbitalPoses, axis = 0) 
+		allOrbitalExponents += [cartesianGaussian.exponent for cartesianGaussian in contractedGaussian.cartesianGaussians]
+	minBound = np.min(allOrbitalPoses, axis = 0)
 	maxBound = np.max(allOrbitalPoses, axis = 0)
-	lattice_buffer = np.ones(3) * (np.max(allOrbitalPoses) - np.min(allOrbitalPoses)) * 0.5
+	lattice_buffer = np.ones(3) * 1/np.min(allOrbitalExponents)**0.5
 	minBound -= lattice_buffer
 	maxBound += lattice_buffer
 	print(minBound, maxBound, lattice_buffer)
@@ -41,9 +45,9 @@ def plotOrbitals(contractedGaussians, coeffs, ax, quantile = 0.5):
 	scale = maxBound - minBound
 
 	#print(ax.get_xlim3d(), ax.get_ylim3d(), ax.get_zlim3d())
-	ax.set_xlim3d(min(minBound[0], ax.get_xlim3d()[0]), max(maxBound[0], ax.get_xlim3d()[1]))
-	ax.set_ylim3d(min(minBound[1], ax.get_ylim3d()[0]), max(maxBound[1], ax.get_ylim3d()[1]))
-	ax.set_zlim3d(min(minBound[2], ax.get_zlim3d()[0]), max(maxBound[2], ax.get_zlim3d()[1]))
+	ax.set_xlim3d(min(minBound[0] * scaleup, ax.get_xlim3d()[0]), max(maxBound[0] * scaleup, ax.get_xlim3d()[1]))
+	ax.set_ylim3d(min(minBound[1] * scaleup, ax.get_ylim3d()[0]), max(maxBound[1] * scaleup, ax.get_ylim3d()[1]))
+	ax.set_zlim3d(min(minBound[2] * scaleup, ax.get_zlim3d()[0]), max(maxBound[2] * scaleup, ax.get_zlim3d()[1]))
 	ax.set_aspect("equal")
 	#print(ax.get_xlim3d(), ax.get_ylim3d(), ax.get_zlim3d())
 	plotPsi(psi, scale, minBound, ax, quantile)

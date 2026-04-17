@@ -23,7 +23,12 @@ contractedGaussian3 = ContractedGaussian([cartesianGaussian3], [1,1])
 orbitals = [contractedGaussian1, contractedGaussian2, contractedGaussian3]
 nuclei = [Nucleus(pos1, 1), Nucleus(pos2, 1), Nucleus(pos3, 1)]
 
-print(orbtialEigs([Nucleus(pos2, 1)], [ContractedGaussian([CartesianGaussian(pos1, 5, np.array([0,0,0]))], [1])], 0.01))
+orb = ContractedGaussian([CartesianGaussian(pos1, 0.5 / bohr_radius**2, np.array([0,0,0]))], [1])
+eigval, eigvecs = orbtialEigs([Nucleus(pos1, 1)], [orb], 0.01 * bohr_radius)
+print("eigval:",eigval, "in eV:", eigval / charge_e)
+#ax = setupAxes("testing", bohr_radius)
+#plotOrbitals([orb], [1], ax)
+#plt.show()
 exit()
 
 eigenvalues, eigenvectors = orbtialEigs(nuclei, orbitals, 0.01)
