@@ -21,7 +21,7 @@ with open(args.inputfile, "r") as file:
 print("Atom positions (m):", atom_positions)
 print("Atom charges:", atom_charges)
 
-exponent = 100 / bohr_radius
+exponent = 0.5 / bohr_radius**2
 
 orbitals = []
 nuclei = []

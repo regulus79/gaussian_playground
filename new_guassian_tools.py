@@ -77,10 +77,10 @@ def primativeOverlapIntegral(orbital1, orbital2):
 
 # The laplacian is applied to the second argument
 def primativeKineticIntegral(orbital1, orbital2, steplength):
-	kineticX = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([2,0,0]), steplength)
-	kineticY = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([0,2,0]), steplength)
-	kineticZ = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([0,0,2]), steplength)
-	return -(kineticX + kineticY + kineticZ) * h_bar**2 / (2 * mass_e)
+	laplacianX = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([2,0,0]), steplength)
+	laplacianY = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([0,2,0]), steplength)
+	laplacianZ = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([0,0,2]), steplength)
+	return -(laplacianX + laplacianY + laplacianZ) * h_bar**2 / (2 * mass_e)
 
 
 def integralOfNormalGuassianToInfinity(lowerBound, exponent):

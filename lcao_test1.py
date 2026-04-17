@@ -6,12 +6,12 @@ import numpy as np
 
 num_trials = 20
 
-spacings = np.linspace(0.001 * bohr_radius, 0.1 * bohr_radius, num_trials)
+spacings = np.linspace(0.1 * bohr_radius, 1 * bohr_radius, num_trials)
 
 orbitalEnergy = np.zeros(num_trials)
 nucleiEnergy = np.zeros(num_trials)
 
-exponent = 1e7 / bohr_radius
+exponent = 10 / bohr_radius**2
 
 for i, spacing in enumerate(spacings):
 	pos1 = np.array([0,0,0])
@@ -34,6 +34,7 @@ for i, spacing in enumerate(spacings):
 totalEnergy = orbitalEnergy + nucleiEnergy
 
 print(f"Min energy {np.min(totalEnergy)} at distance {spacings[np.argmin(totalEnergy)]}")
+print(nucleiEnergy)
 
 plt.plot(spacings, orbitalEnergy, label = "Orbital energy")
 plt.plot(spacings, nucleiEnergy, label = "Nuclei energy")

@@ -18,7 +18,7 @@ def plotOrbitals(contractedGaussians, coeffs, ax, quantile = 0.5):
 		allOrbitalPoses += [cartesianGaussian.pos*1.0 for cartesianGaussian in contractedGaussian.cartesianGaussians]
 	minBound = np.min(allOrbitalPoses, axis = 0) 
 	maxBound = np.max(allOrbitalPoses, axis = 0)
-	lattice_buffer = np.ones(3) * (np.max(allOrbitalPoses) - np.min(allOrbitalPoses)) * 0.1
+	lattice_buffer = np.ones(3) * (np.max(allOrbitalPoses) - np.min(allOrbitalPoses)) * 0.5
 	minBound -= lattice_buffer
 	maxBound += lattice_buffer
 	print(minBound, maxBound, lattice_buffer)
@@ -60,7 +60,7 @@ def plotPsi(psi, scale, pos, ax, quantile = 0.5):
 	verts = verts[:, [1, 0, 2]]
 	verts *= scale / psi.shape[0] * scaleup
 	print(scale / psi.shape[0] * scaleup)
-	verts += pos
+	verts += pos * scaleup
 	mesh = Poly3DCollection(verts[faces], shade=True, facecolors = facecolors)
 	ax.add_collection3d(mesh)
 
