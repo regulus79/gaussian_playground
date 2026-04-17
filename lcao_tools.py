@@ -8,7 +8,7 @@ class Nucleus():
 		self.charge = charge
 
 def primativeHamiltonianIntegral(orbital1, orbital2, potentialPos, potentialMagnitude, steplength):
-	return -1/2 * primativeKineticIntegral(orbital1, orbital2, steplength) + -potentialMagnitude * primativeCoulombIntegral(orbital1, orbital2, potentialPos)
+	return primativeKineticIntegral(orbital1, orbital2, steplength) + -potentialMagnitude * primativeCoulombIntegral(orbital1, orbital2, potentialPos)
 
 
 def coulombMatrix(nuclei, orbitals, steplength):
@@ -31,7 +31,16 @@ def overlapMatrix(orbitals, steplength):
 
 def orbtialEigs(nuclei, orbitals, steplength):
 	S = overlapMatrix(orbitals, 0.01)
+	print(S)
 	H = coulombMatrix(nuclei, orbitals, 0.01)
 	A = np.linalg.inv(S) @ H
 	eigenvalues, eigenvectors = np.linalg.eig(A)
 	return eigenvalues, np.transpose(eigenvectors)
+
+def nucleiRepulsionEnergy(nuclei):
+	total = 0
+	for n1 in nuclei:
+		for n2 in nuclei:
+			if n1 != n2:
+				total += n1.charge * n2.charge / np.sum((n1.pos - n2.pos)**2)  *  charge_e**2 / (4 * math.pi * epsilon0)
+	return total

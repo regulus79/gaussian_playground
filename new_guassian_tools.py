@@ -1,6 +1,13 @@
 import math
 import numpy as np
 
+bohr_radius = 5.291772e-11
+h_bar = 6.626070e-34 / (2*math.pi)
+mass_e = 9.109384e-31
+charge_e = 1.602176e-19
+epsilon0 = 8.854188e-12
+
+
 
 def derivativeOfTwoGaussianFunc(func, orbital1, orbital2, derivatives1, derivatives2, steplength, *args):
 	# Sign flips since we are differentiating wrt to the gaussian centers, not x technically
@@ -73,7 +80,7 @@ def primativeKineticIntegral(orbital1, orbital2, steplength):
 	kineticX = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([2,0,0]), steplength)
 	kineticY = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([0,2,0]), steplength)
 	kineticZ = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([0,0,2]), steplength)
-	return kineticX + kineticY + kineticZ
+	return -(kineticX + kineticY + kineticZ) * h_bar**2 / (2 * mass_e)
 
 
 def integralOfNormalGuassianToInfinity(lowerBound, exponent):
@@ -94,12 +101,13 @@ def primativeCoulombIntegral(orbital1, orbital2, potentialPos):
 	offset = productPos - potentialPos
 	distance = np.sum(offset**2)**0.5
 
-	overallCoeff = math.pi / exponent * scalingFactorX * scalingFactorY * scalingFactorZ
+	unitsCoeff = charge_e / (4*math.pi*epsilon0)
+	mathCoeff = math.pi / exponent * scalingFactorX * scalingFactorY * scalingFactorZ
 
 	if distance == 0:
-		return 2 * overallCoeff
+		return 2 * mathCoeff * unitsCoeff
 	
 	integral1 = integralOfNormalGuassianToInfinity(-distance, exponent)
 	integral2 = integralOfNormalGuassianToInfinity(distance, exponent)
 
-	return overallCoeff * (integral1 - integral2) / distance
+	return unitsCoeff * mathCoeff * (integral1 - integral2) / distance

@@ -9,7 +9,7 @@ import numpy as np
 
 pos1 = np.array([0,0,0])
 pos2 = np.array([2,0,0])
-pos3 = np.array([4,0,0])
+pos3 = np.array([4,1,2])
 
 cartesianGaussian1 = CartesianGaussian(pos1, 1, np.array([0,0,0]))
 contractedGaussian1 = ContractedGaussian([cartesianGaussian1], [1,1])
@@ -22,21 +22,24 @@ contractedGaussian3 = ContractedGaussian([cartesianGaussian3], [1,1])
 
 orbitals = [contractedGaussian1, contractedGaussian2, contractedGaussian3]
 nuclei = [Nucleus(pos1, 1), Nucleus(pos2, 1), Nucleus(pos3, 1)]
-S = overlapMatrix(orbitals, 0.01)
-H = coulombMatrix(nuclei, orbitals, 0.01)
-print(S)
-print(H)
-A = np.linalg.inv(S) @ H
-print(A)
-print(np.linalg.eig(A))
 
-ax = setupAxes("testing", 4)
-plotAtomPositions(ax, nuclei)
+print(orbtialEigs([Nucleus(pos2, 1)], [ContractedGaussian([CartesianGaussian(pos1, 5, np.array([0,0,0]))], [1])], 0.01))
+exit()
+
+eigenvalues, eigenvectors = orbtialEigs(nuclei, orbitals, 0.01)
+print(eigenvalues, eigenvectors)
+
+plotMOs(eigenvalues, eigenvectors, orbitals, nuclei)
+
+#ax = setupAxes("testing", 4)
+#plotAtomPositions(ax, nuclei)
 #plotOrbitals([contractedGaussian1], [1], ax)
 #plotOrbitals([contractedGaussian2], [1], ax)
 #plotOrbitals([contractedGaussian3], [1], ax)
-plotOrbitals([contractedGaussian1, contractedGaussian2, contractedGaussian3], [1,1,1], ax)
-plt.show()
+#plotOrbitals([contractedGaussian1, contractedGaussian2], [1,1,1], ax)
+
+#plotOrbitals([contractedGaussian1, contractedGaussian2, contractedGaussian3], [1,1,1], ax)
+#plt.show()
 
 exit()
 

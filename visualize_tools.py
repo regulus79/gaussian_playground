@@ -9,15 +9,19 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 lattice_shape = (20, 20, 20)
 length_per_step = 3 / 20
 lattice_radius = 5
-lattice_buffer = 3
 
+scaleup = 1e10
 
 def plotOrbitals(contractedGaussians, coeffs, ax, quantile = 0.5):
 	allOrbitalPoses = []
 	for contractedGaussian in contractedGaussians:
 		allOrbitalPoses += [cartesianGaussian.pos*1.0 for cartesianGaussian in contractedGaussian.cartesianGaussians]
-	minBound = np.min(allOrbitalPoses, axis = 0) - np.array([lattice_buffer, lattice_buffer, lattice_buffer])
-	maxBound = np.max(allOrbitalPoses, axis = 0) + np.array([lattice_buffer, lattice_buffer, lattice_buffer])
+	minBound = np.min(allOrbitalPoses, axis = 0) 
+	maxBound = np.max(allOrbitalPoses, axis = 0)
+	lattice_buffer = np.ones(3) * (np.max(allOrbitalPoses) - np.min(allOrbitalPoses)) * 0.1
+	minBound -= lattice_buffer
+	maxBound += lattice_buffer
+	print(minBound, maxBound, lattice_buffer)
 
 	psi = np.zeros(lattice_shape)
 	coords_x = np.linspace(minBound[0], maxBound[0], 20)
@@ -54,7 +58,8 @@ def plotPsi(psi, scale, pos, ax, quantile = 0.5):
 	#verts -= 0.5 * np.array([psi.shape[0], psi.shape[1], psi.shape[2]])
 	# Why must the verts be rearranged?
 	verts = verts[:, [1, 0, 2]]
-	verts *= scale / psi.shape[0]
+	verts *= scale / psi.shape[0] * scaleup
+	print(scale / psi.shape[0] * scaleup)
 	verts += pos
 	mesh = Poly3DCollection(verts[faces], shade=True, facecolors = facecolors)
 	ax.add_collection3d(mesh)
@@ -71,7 +76,7 @@ def setupAxes(title, plot_radius, rows = 1, cols = 1, index = 1):
 
 def plotAtomPositions(ax, nuclei):
 	for nucleus in nuclei:
-		ax.scatter(nucleus.pos[0], nucleus.pos[1], nucleus.pos[2], color = "black")
+		ax.scatter(nucleus.pos[0] * scaleup, nucleus.pos[1] * scaleup, nucleus.pos[2] * scaleup, color = "black")
 
 
 def plotMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, num_cols = 3):
