@@ -7,6 +7,7 @@ mass_e = 9.109384e-31
 charge_e = 1.602176e-19
 epsilon0 = 8.854188e-12
 
+ALMOST_ZERO = 1e-25
 
 
 def derivativeOfTwoGaussianFunc(func, orbital1, orbital2, derivatives1, derivatives2, steplength, *args):
@@ -104,7 +105,7 @@ def primativeCoulombIntegral(orbital1, orbital2, potentialPos):
 	unitsCoeff = charge_e**2 / (4*math.pi*epsilon0)
 	mathCoeff = math.pi / exponent * scalingFactorX * scalingFactorY * scalingFactorZ
 
-	if distance == 0:
+	if distance <= ALMOST_ZERO:
 		return 2 * mathCoeff * unitsCoeff
 	
 	integral1 = integralOfNormalGuassianToInfinity(-distance, exponent)

@@ -65,6 +65,40 @@ def kineticIntegral(orbital1, orbital2):
 
 	return overlapIntegral(orbital1, tmpOrbitalX) + overlapIntegral(orbital1, tmpOrbitalY) + overlapIntegral(orbital1, tmpOrbitalZ)
 
+def fixedCoulombIntegral(orbital1, orbital2, potentialPos):
+	tmpOrbital1 = orbital1
+	tmpOrbital2 = orbital2
+
+	totalDerivative = 0
+	steplength = 0.01
+	for xi in range(orbital1.xderivativePower+1):
+		for yi in range(orbital1.yderivativePower+1):
+			for zi in range(orbital1.zderivativePower+1):
+				for xj in range(orbital2.xderivativePower+1):
+					for yj in range(orbital2.yderivativePower+1):
+						for zj in range(orbital2.zderivativePower+1):
+							dxi = (xi - orbital1.xderivativePower/2) * steplength
+							dyi = (yi - orbital1.yderivativePower/2) * steplength
+							dzi = (zi - orbital1.zderivativePower/2) * steplength
+							dxj = (xj - orbital2.xderivativePower/2) * steplength
+							dyj = (yj - orbital2.yderivativePower/2) * steplength
+							dzj = (zj - orbital2.zderivativePower/2) * steplength
+							coeffxi = math.comb(orbital1.xderivativePower, xi) * (-1)**(orbital1.xderivativePower - xi) / steplength**orbital1.xderivativePower
+							coeffyi = math.comb(orbital1.yderivativePower, yi) * (-1)**(orbital1.yderivativePower - yi) / steplength**orbital1.yderivativePower
+							coeffzi = math.comb(orbital1.zderivativePower, zi) * (-1)**(orbital1.zderivativePower - zi) / steplength**orbital1.zderivativePower
+							coeffxj = math.comb(orbital2.xderivativePower, xj) * (-1)**(orbital2.xderivativePower - xj) / steplength**orbital2.xderivativePower
+							coeffyj = math.comb(orbital2.yderivativePower, yj) * (-1)**(orbital2.yderivativePower - yj) / steplength**orbital2.yderivativePower
+							coeffzj = math.comb(orbital2.zderivativePower, zj) * (-1)**(orbital2.zderivativePower - zj) / steplength**orbital2.zderivativePower
+							newExponentX, newPosX, _, _ = gaussianProductConstants(orbital1.xpos + dxi, orbital1.exponent, orbital2.xpos + dxj, orbital2.exponent)
+							newExponentY, newPosY, _, _ = gaussianProductConstants(orbital1.ypos + dyi, orbital1.exponent, orbital2.ypos + dyj, orbital2.exponent)
+							newExponentZ, newPosZ, _, _ = gaussianProductConstants(orbital1.zpos + dzi, orbital1.exponent, orbital2.zpos + dzj, orbital2.exponent)
+							#print(newPosX, newPosY, newPosZ)
+							#print(dxi, dyi, dzi, dxj, dyj, dzj)
+							#print(coeffxi, coeffyi, coeffzi, coeffxj, coeffyj, coeffzj)
+							#print(coeffxi * coeffyi * coeffzi * coeffxj * coeffyj * coeffzj * gaussianCoulombIntegral(np.array([newPosX, newPosY, newPosZ]), newExponentX, 0, 0, 0, potentialPos))
+							totalDerivative += coeffxi * coeffyi * coeffzi * coeffxj * coeffyj * coeffzj * gaussianCoulombIntegral(np.array([newPosX, newPosY, newPosZ]), newExponentX, 0, 0, 0, potentialPos)
+
+	return totalDerivative
 
 def coulombIntegral(orbital1, orbital2, potentialPos):
 	newExponentX, newPosX, scalingConstantExponentX, scalingConstantArgumentX = gaussianProductConstants(orbital1.xpos, orbital1.exponent, orbital2.xpos, orbital2.exponent)

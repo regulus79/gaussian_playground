@@ -7,10 +7,12 @@ class Nucleus():
 		self.pos = pos
 		self.charge = charge
 
-def primativeHamiltonianIntegral(orbital1, orbital2, potentialPos, potentialMagnitude, steplength):
+def primativeHamiltonianIntegral(orbital1, orbital2, nuclei, steplength):
 	kinetic = primativeKineticIntegral(orbital1, orbital2, steplength)
-	potential = -potentialMagnitude * primativeCoulombIntegral(orbital1, orbital2, potentialPos)
-	print("kinetic", kinetic, "potential", potential)
+	potential = 0
+	for nucleus in nuclei:
+		potential += -nucleus.charge * primativeCoulombIntegral(orbital1, orbital2, nucleus.pos)
+	#print("kinetic", kinetic, "potential", potential)
 	return kinetic + potential
 
 
@@ -18,10 +20,7 @@ def coulombMatrix(nuclei, orbitals, steplength):
 	H = np.zeros((len(orbitals), len(orbitals)))
 	for i, orbital1 in enumerate(orbitals):
 		for j, orbital2 in enumerate(orbitals):
-			total = 0
-			for nucleus in nuclei:
-				total += evalTwoOrbitalFunctionWithContractedGaussians(primativeHamiltonianIntegral, orbital1, orbital2, steplength, nucleus.pos, nucleus.charge, steplength)
-			H[i][j] = total
+			H[i][j] = evalTwoOrbitalFunctionWithContractedGaussians(primativeHamiltonianIntegral, orbital1, orbital2, steplength, nuclei, steplength)
 	return H
 
 
@@ -34,7 +33,7 @@ def overlapMatrix(orbitals, steplength):
 
 def orbtialEigs(nuclei, orbitals, steplength):
 	S = overlapMatrix(orbitals, steplength)
-	print(S)
+	#print(S)
 	H = coulombMatrix(nuclei, orbitals, steplength)
 	#print(H)
 	A = np.linalg.inv(S) @ H
@@ -43,8 +42,8 @@ def orbtialEigs(nuclei, orbitals, steplength):
 
 def nucleiRepulsionEnergy(nuclei):
 	total = 0
-	for n1 in nuclei:
-		for n2 in nuclei:
-			if n1 != n2:
-				total += n1.charge * n2.charge / np.sum((n1.pos - n2.pos)**2)  *  charge_e**2 / (4 * math.pi * epsilon0)
+	for i in range(len(nuclei)):
+		for j in range(len(nuclei)):
+			if i < j:
+				total += nuclei[i].charge * nuclei[j].charge / np.sum((nuclei[i].pos - nuclei[j].pos)**2)**0.5  *  charge_e**2 / (4 * math.pi * epsilon0)
 	return total
