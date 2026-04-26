@@ -85,7 +85,7 @@ def plotMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, lattice
 	num_rows = math.ceil(num_plots / num_cols)
 	plot_index = 1
 	for i in np.argsort(eigenvalues):
-		ax = setupAxes(f"E = {np.real(eigenvalues[i]) / charge_e} eV", 1, num_rows, num_cols, plot_index)
+		ax = setupAxes(f"E = {np.real(eigenvalues[i]) / charge_e} eV", 0.0001, num_rows, num_cols, plot_index)
 		plotOrbitals(orbitals, eigenvectors[i], ax, quantile, lattice_shape, buffer)
 		plotAtomPositions(ax, nuclei)
 		plot_index += 1
