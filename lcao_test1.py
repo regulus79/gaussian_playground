@@ -4,9 +4,9 @@ from lcao_tools import *
 from visualize_tools import *
 import numpy as np
 
-num_trials = 20
+num_trials = 200
 
-spacings = np.linspace(0.5 * bohr_radius, 4 * bohr_radius, num_trials)
+spacings = np.linspace(0.5 * bohr_radius, 5 * bohr_radius, num_trials)
 
 orbitalEnergyBonding = np.zeros(num_trials)
 orbitalEnergyAntiBonding = np.zeros(num_trials)
@@ -29,6 +29,7 @@ for i, spacing in enumerate(spacings):
 	contractedGaussian2e = ContractedGaussian([CartesianGaussian(pos2, 16*exponent, np.array([0,0,0]))], [1])
 
 	orbitals = [contractedGaussian1a, contractedGaussian1b, contractedGaussian1c, contractedGaussian1d, contractedGaussian1e, contractedGaussian2a, contractedGaussian2b, contractedGaussian2c, contractedGaussian2d, contractedGaussian2e]
+	orbitals2 = [contractedGaussian1a, contractedGaussian1b, contractedGaussian2a, contractedGaussian2b]
 	nuclei = [Nucleus(pos1, 1), Nucleus(pos2, 1)]
 
 	print("----", i, spacing)
@@ -37,8 +38,8 @@ for i, spacing in enumerate(spacings):
 	minIndex = np.argmin(eigenvalues)
 	maxIndex = np.argsort(eigenvalues)[1]
 	#print(spacing, eigenvalues[minIndex], eigenvectors[minIndex])
-	orbitalEnergyBonding[i] = eigenvalues[minIndex] #* 2
-	orbitalEnergyAntiBonding[i] = eigenvalues[maxIndex] #* 2
+	orbitalEnergyBonding[i] = eigenvalues[minIndex] * 1
+	orbitalEnergyAntiBonding[i] = eigenvalues[maxIndex] * 1
 	nucleiEnergy[i] = nucleiRepulsionEnergy(nuclei)
 
 totalEnergy = orbitalEnergyBonding + nucleiEnergy
@@ -48,11 +49,11 @@ print(orbitalEnergyBonding)
 print(orbitalEnergyAntiBonding)
 print(nucleiEnergy)
 
-plt.plot(spacings, orbitalEnergyBonding / charge_e, label = "Bonding Orbital energy (eV)")
-plt.plot(spacings, orbitalEnergyAntiBonding / charge_e, label = "Antibonding Orbital energy (eV)")
-plt.plot(spacings, nucleiEnergy / charge_e, label = "Nuclei energy (eV)")
-plt.plot(spacings, totalEnergy / charge_e, label = "Total energy (bonding) (eV)")
-plt.plot(spacings, (orbitalEnergyAntiBonding + nucleiEnergy) / charge_e, label = "Total energy (antibonding) (eV)")
+plt.plot(spacings, orbitalEnergyBonding / charge_e, label = "Nucleus-Electron attraction energy (eV)")
+#plt.plot(spacings, orbitalEnergyAntiBonding / charge_e, label = "Antibonding Orbital energy (eV)")
+plt.plot(spacings, nucleiEnergy / charge_e, label = "Nucleus-Nucleus repulsion energy (eV)")
+plt.plot(spacings, totalEnergy / charge_e, label = "Total energy (eV)")
+#plt.plot(spacings, (orbitalEnergyAntiBonding + nucleiEnergy) / charge_e, label = "Total energy (antibonding) (eV)")
 plt.legend()
 plt.ylabel("Total Energy")
 plt.xlabel("Bond Length")

@@ -7,7 +7,7 @@ mass_e = 9.109384e-31
 charge_e = 1.602176e-19
 epsilon0 = 8.854188e-12
 
-ALMOST_ZERO = 1e-25
+ALMOST_ZERO = 1e-20
 
 
 def derivativeOfTwoGaussianFunc(func, orbital1, orbital2, derivatives1, derivatives2, steplength, *args):

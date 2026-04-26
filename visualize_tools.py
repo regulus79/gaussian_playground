@@ -25,9 +25,9 @@ def plotOrbitals(contractedGaussians, coeffs, ax, quantile = 0.5):
 	lattice_buffer = np.ones(3) * 1/np.min(allOrbitalExponents)**0.5
 	minBound -= lattice_buffer
 	maxBound += lattice_buffer
-	print(minBound, maxBound, lattice_buffer)
+	#print(minBound, maxBound, lattice_buffer)
 
-	psi = np.zeros(lattice_shape)
+	psi = np.zeros(lattice_shape, dtype = "complex")
 	coords_x = np.linspace(minBound[0], maxBound[0], 20)
 	coords_y = np.linspace(minBound[1], maxBound[1], 20)
 	coords_z = np.linspace(minBound[2], maxBound[2], 20)
@@ -63,7 +63,7 @@ def plotPsi(psi, scale, pos, ax, quantile = 0.5):
 	# Why must the verts be rearranged?
 	verts = verts[:, [1, 0, 2]]
 	verts *= scale / psi.shape[0] * scaleup
-	print(scale / psi.shape[0] * scaleup)
+	#print(scale / psi.shape[0] * scaleup)
 	verts += pos * scaleup
 	mesh = Poly3DCollection(verts[faces], shade=True, facecolors = facecolors)
 	ax.add_collection3d(mesh)
@@ -89,8 +89,16 @@ def plotMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, num_col
 	num_rows = math.ceil(num_plots / num_cols)
 	plot_index = 1
 	for i in np.argsort(eigenvalues):
-		ax = setupAxes(f"E = {np.real(eigenvalues[i])}", 1, num_rows, num_cols, plot_index)
+		ax = setupAxes(f"E = {np.real(eigenvalues[i]) / charge_e} eV", 1, num_rows, num_cols, plot_index)
 		plotOrbitals(orbitals, eigenvectors[i], ax, quantile)
 		plotAtomPositions(ax, nuclei)
 		plot_index += 1
 	plt.show()
+
+def plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, num_cols = 3, plus_extra = 0):
+	total_electrons = sum([n.charge for n in nuclei])
+	print("Total electrons:", total_electrons)
+	sorted_indicies = np.argsort(eigenvalues)
+	occupied_indicies = sorted_indicies[0:total_electrons//2 + plus_extra]
+	print("Occupied Eigenstate Energies (eV):", eigenvalues[occupied_indicies] / charge_e)
+	plotMOs(eigenvalues[occupied_indicies], eigenvectors[occupied_indicies], orbitals, nuclei, quantile, num_cols)
