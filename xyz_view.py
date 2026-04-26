@@ -9,6 +9,8 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("inputfile")
 parser.add_argument("--quantile", type=float, default=0.5)
+parser.add_argument("--lattice_size", type=int, default=20)
+parser.add_argument("--buffer", type=float, default=1.0)
 args = parser.parse_args()
 print(f"Parsing file {args.inputfile}")
 
@@ -21,8 +23,8 @@ with open(args.inputfile, "r") as file:
 print("Atom positions (m):", atom_positions)
 print("Atom charges:", atom_charges)
 
-exponent = 0.5 / bohr_radius**2
-exponent_factors = [0.5, 1, 2]
+exponent = 0.1 / bohr_radius**2
+exponent_factors = [2048*16*2]
 
 orbitals = []
 nuclei = []
@@ -45,6 +47,6 @@ print("Eigenvalues (eV):", np.sort(eigenvalues) / charge_e)
 print("Eigenvectors:")
 for i in np.argsort(eigenvalues):
 	print(np.round(eigenvectors[:, i], 4))
-
+print("Total Occupied Energy (eV):", occupiedElectronEnergy(eigenvalues, nuclei) / charge_e)
 #plotMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile=args.quantile, num_cols=4)
-plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile=args.quantile, num_cols=4, plus_extra = 2)
+#plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile=args.quantile, lattice_shape=(args.lattice_size, args.lattice_size, args.lattice_size), buffer=args.buffer, num_cols=4, plus_extra = 2)

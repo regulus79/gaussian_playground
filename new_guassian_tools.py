@@ -76,11 +76,48 @@ def primativeOverlapIntegral(orbital1, orbital2):
 	overlapZ = primativeGuassianInnerProduct(orbital1.pos[2], orbital1.exponent, orbital2.pos[2], orbital2.exponent)
 	return overlapX * overlapY * overlapZ
 
-# The laplacian is applied to the second argument
+# How to take Second derivative of gaussian, inner producted with other gaussian
+# -2(b1)*exp(-(b1)(x-c1)^2)*exp(-(b2)(x-c2)^2)  +  4(b1)^2*(x-c1)^2*exp(-(b1)(x-c1)^2)*exp(-(b2)(x-c2)^2)
+# -2(b1)*exp(-(b1)(x-c1)^2 - (b2)(x-c2)^2)  +  4(b1)^2*(x-c1)^2*exp(-(b1)(x-c1)^2 - (b2)(x-c2)^2)
+# -2(b1)*exp(-(b1)(x-c1)^2 - (b2)(x-c2)^2)  +  4(b1)^2*(x-c1)^2*exp(-(b1*b2)/(b1+b2) * (c1-c2)^2))*exp(-(b1+b2)*(x-(b1c1 + b2c2)/(b1+b2))^2)
+# let p = new pos = (b1c1 + b2c2)/(b1+b2)
+# -2(b1)*exp(-scalingExponent * scalingArgument^2)*exp(-newExponent * (x - newPos)^2)
+#  +  4(b1)^2*(x-c1)^2*exp(-scalingExponent * scalingArgument^2)*exp(-newExponent * (x - newPos)^2)
+# The first term equals -2(b1) * overlap = -2(b1) * exp(-scalingExponent * scalingArgument^2) * sqrt(pi/newExponent)
+# Now the second term
+# 4(b1)^2*(x-c1)^2*exp(-scalingExponent * scalingArgument^2)*exp(-newExponent * (x - newPos)^2)
+# since (x-c1)^2 = (x-newPos)^2 + 2*(newPos - c1)(x-newPos) + (newPos - c1)^2
+# =   4(b1)^2 * (x-newPos)^2 * exp(-scalingExponent * scalingArgument^2)*exp(-newExponent * (x - newPos)^2)
+#   + 4(b1)^2 * 2*(newPos - c1)(x-newPos) * exp(-scalingExponent * scalingArgument^2)*exp(-newExponent * (x - newPos)^2)
+#   + 4(b1)^2 * (newPos - c1)^2 * exp(-scalingExponent * scalingArgument^2)*exp(-newExponent * (x - newPos)^2)
+# integral of First term is just 4(b1)^2 * 1/(2*newExponent) * sqrt(pi/newExponent) * exp(-scalingExponent * scalingArgument^2)
+# integral of Second term is 0
+# integral of Third term is 4(b1)^2 * (newPos - c1)^2 * sqrt(pi/newExponent) * exp(-scalingExponent * scalingArgument^2)
+# So in total we have
+# =   -2(b1) * exp(-scalingExponent * scalingArgument^2) * sqrt(pi/newExponent)
+#   + 4(b1)^2 * 1/(2*newExponent) * sqrt(pi/newExponent) * exp(-scalingExponent * scalingArgument^2)
+#   + 4(b1)^2 * (newPos - c1)^2 * sqrt(pi/newExponent) * exp(-scalingExponent * scalingArgument^2)
+# = exp(-scalingExponent * scalingArgument^2) * sqrt(pi/newExponent) * (-2b1 + 4(b1)^2 * (1/(2*newExponent) + (newPos - c1)^2))
+# = overlap * (-2b1 + 4(b1)^2 * (1/(2*newExponent) + (newPos - c1)^2))
+
+def primativeGaussianLaplacianInnerProduct(pos1, exponent1, pos2, exponent2):
+	overlap = primativeGuassianInnerProduct(pos1, exponent1, pos2, exponent2)
+	newExponent = exponent1 + exponent2
+	newPos = (exponent1 * pos1 + exponent2 * pos2) / (exponent1 + exponent2)
+	laplacian = overlap * (-2*exponent1 + 4*exponent1**2 * (1/(2*newExponent) + (newPos - pos1)**2))
+	return laplacian
+
 def primativeKineticIntegral(orbital1, orbital2, steplength):
-	laplacianX = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([2,0,0]), steplength)
-	laplacianY = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([0,2,0]), steplength)
-	laplacianZ = derivativeOfTwoGaussianFunc(primativeOverlapIntegral, orbital1, orbital2, np.array([0,0,0]), np.array([0,0,2]), steplength)
+	newExponent = orbital1.exponent + orbital2.exponent
+	overlapX = primativeGuassianInnerProduct(orbital1.pos[0], orbital1.exponent, orbital2.pos[0], orbital2.exponent)
+	overlapY = primativeGuassianInnerProduct(orbital1.pos[1], orbital1.exponent, orbital2.pos[1], orbital2.exponent)
+	overlapZ = primativeGuassianInnerProduct(orbital1.pos[2], orbital1.exponent, orbital2.pos[2], orbital2.exponent)
+	newPosX = (orbital1.exponent * orbital1.pos[0] + orbital2.exponent * orbital2.pos[0]) / (orbital1.exponent + orbital2.exponent)
+	newPosY = (orbital1.exponent * orbital1.pos[1] + orbital2.exponent * orbital2.pos[1]) / (orbital1.exponent + orbital2.exponent)
+	newPosZ = (orbital1.exponent * orbital1.pos[2] + orbital2.exponent * orbital2.pos[2]) / (orbital1.exponent + orbital2.exponent)
+	laplacianX = overlapX * overlapY * overlapZ * (-2*orbital1.exponent + 4*orbital1.exponent**2 * (1/(2*newExponent) + (newPosX - orbital1.pos[0])**2))
+	laplacianY = overlapX * overlapY * overlapZ * (-2*orbital1.exponent + 4*orbital1.exponent**2 * (1/(2*newExponent) + (newPosY - orbital1.pos[1])**2))
+	laplacianZ = overlapX * overlapY * overlapZ * (-2*orbital1.exponent + 4*orbital1.exponent**2 * (1/(2*newExponent) + (newPosZ - orbital1.pos[2])**2))
 	return -(laplacianX + laplacianY + laplacianZ) * h_bar**2 / (2 * mass_e)
 
 

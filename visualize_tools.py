@@ -8,13 +8,9 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from new_guassian_tools import *
 
 
-lattice_shape = (20, 20, 20)
-length_per_step = 3 / 20
-lattice_radius = 5
-
 scaleup = 1e10
 
-def plotOrbitals(contractedGaussians, coeffs, ax, quantile = 0.5):
+def plotOrbitals(contractedGaussians, coeffs, ax, quantile = 0.5, lattice_shape = (20, 20, 20), buffer = 1.0):
 	allOrbitalPoses = []
 	allOrbitalExponents = []
 	for contractedGaussian in contractedGaussians:
@@ -22,7 +18,7 @@ def plotOrbitals(contractedGaussians, coeffs, ax, quantile = 0.5):
 		allOrbitalExponents += [cartesianGaussian.exponent for cartesianGaussian in contractedGaussian.cartesianGaussians]
 	minBound = np.min(allOrbitalPoses, axis = 0)
 	maxBound = np.max(allOrbitalPoses, axis = 0)
-	lattice_buffer = np.ones(3) * 1/np.min(allOrbitalExponents)**0.5
+	lattice_buffer = np.ones(3) * 1/np.min(allOrbitalExponents)**0.5 * buffer
 	minBound -= lattice_buffer
 	maxBound += lattice_buffer
 	#print(minBound, maxBound, lattice_buffer)
@@ -83,22 +79,23 @@ def plotAtomPositions(ax, nuclei):
 		ax.scatter(nucleus.pos[0] * scaleup, nucleus.pos[1] * scaleup, nucleus.pos[2] * scaleup, color = "black")
 
 
-def plotMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, num_cols = 3):
+def plotMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, lattice_shape = (20,20,20), buffer = 1.0, num_cols = 3):
 	fig = plt.figure()
 	num_plots = eigenvalues.shape[0]
 	num_rows = math.ceil(num_plots / num_cols)
 	plot_index = 1
 	for i in np.argsort(eigenvalues):
 		ax = setupAxes(f"E = {np.real(eigenvalues[i]) / charge_e} eV", 1, num_rows, num_cols, plot_index)
-		plotOrbitals(orbitals, eigenvectors[i], ax, quantile)
+		plotOrbitals(orbitals, eigenvectors[i], ax, quantile, lattice_shape, buffer)
 		plotAtomPositions(ax, nuclei)
 		plot_index += 1
 	plt.show()
 
-def plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, num_cols = 3, plus_extra = 0):
+def plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, lattice_shape = (20,20,20), buffer = 1.0, num_cols = 3, plus_extra = 0):
 	total_electrons = sum([n.charge for n in nuclei])
 	print("Total electrons:", total_electrons)
 	sorted_indicies = np.argsort(eigenvalues)
 	occupied_indicies = sorted_indicies[0:total_electrons//2 + plus_extra]
 	print("Occupied Eigenstate Energies (eV):", eigenvalues[occupied_indicies] / charge_e)
-	plotMOs(eigenvalues[occupied_indicies], eigenvectors[occupied_indicies], orbitals, nuclei, quantile, num_cols)
+	#print("Occupied Eigenvectors:", eigenvectors[occupied_indicies])
+	plotMOs(eigenvalues[occupied_indicies], eigenvectors[occupied_indicies], orbitals, nuclei, quantile, lattice_shape, buffer, num_cols)

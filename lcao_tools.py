@@ -47,3 +47,15 @@ def nucleiRepulsionEnergy(nuclei):
 			if i < j:
 				total += nuclei[i].charge * nuclei[j].charge / np.sum((nuclei[i].pos - nuclei[j].pos)**2)**0.5  *  charge_e**2 / (4 * math.pi * epsilon0)
 	return total
+
+# Assuming # protons = # electrons
+def occupiedElectronEnergy(eigenvalues, nuclei):
+	total_electrons = sum([n.charge for n in nuclei])
+	sorted_indicies = np.argsort(eigenvalues)
+	occupied_indicies = sorted_indicies[0:total_electrons//2]
+	total = 0
+	if total_electrons % 2 == 0:
+		total += 2 * np.sum(eigenvalues[occupied_indicies])
+	else:
+		total += 2 * np.sum(eigenvalues[occupied_indicies]) - eigenvalues[occupied_indicies[-1]]
+	return total
