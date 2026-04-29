@@ -9,8 +9,9 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("inputfile")
 parser.add_argument("--quantile", type=float, default=0.5)
-parser.add_argument("--lattice_size", type=int, default=20)
+parser.add_argument("--lattice_size", type=int, default=40)
 parser.add_argument("--buffer", type=float, default=1.0)
+parser.add_argument("--orbital_multiplicity", type=int, default=3)
 args = parser.parse_args()
 print(f"Parsing file {args.inputfile}")
 
@@ -23,8 +24,13 @@ with open(args.inputfile, "r") as file:
 print("Atom positions (m):", atom_positions)
 print("Atom charges:", atom_charges)
 
-exponent = 0.1 / bohr_radius**2
-exponent_factors = [2**0, 2**0.5, 2**1, 2**1.5, 2**2, 2**2.5, 2**3, 2**4, 2**5, 2**6, 2**8, 2**10]#[2**0, 2**3, 2**6, 2**9]#[2**1,2**2,2**3,2**4,2**6,2**8]
+# Somewhat arbitrary values
+exponent = 0.2 / bohr_radius**2
+# Generate more gaussians with different exponents
+exponent_factors = []#[2**0, 2**0.5, 2**1, 2**1.5, 2**2, 2**2.5, 2**3, 2**4, 2**5, 2**6, 2**8, 2**10]
+for i in range(args.orbital_multiplicity):
+	# Arbitrary spacing of exponents, going 2**0, 2**3, 2**6, 2**9, etc
+	exponent_factors.append(2**(3*i))
 
 orbitals = []
 nuclei = []

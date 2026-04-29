@@ -10,7 +10,7 @@ from new_guassian_tools import *
 
 scaleup = 1e10
 
-def plotOrbitals(contractedGaussians, coeffs, ax, quantile = 0.5, lattice_shape = (20, 20, 20), buffer = 1.0):
+def plotOrbitals(contractedGaussians, coeffs, ax, quantile = 0.5, lattice_shape = (40, 40, 40), buffer = 1.0):
 	allOrbitalPoses = []
 	allOrbitalExponents = []
 	for contractedGaussian in contractedGaussians:
@@ -24,9 +24,9 @@ def plotOrbitals(contractedGaussians, coeffs, ax, quantile = 0.5, lattice_shape 
 	#print(minBound, maxBound, lattice_buffer)
 
 	psi = np.zeros(lattice_shape, dtype = "complex")
-	coords_x = np.linspace(minBound[0], maxBound[0], 20)
-	coords_y = np.linspace(minBound[1], maxBound[1], 20)
-	coords_z = np.linspace(minBound[2], maxBound[2], 20)
+	coords_x = np.linspace(minBound[0], maxBound[0], lattice_shape[0])
+	coords_y = np.linspace(minBound[1], maxBound[1], lattice_shape[1])
+	coords_z = np.linspace(minBound[2], maxBound[2], lattice_shape[2])
 	# Why is x and y flipped in the plot?
 	xv, yv, zv = np.meshgrid(coords_x, coords_y, coords_z)
 	for j, contractedGaussian in enumerate(contractedGaussians):
@@ -79,7 +79,7 @@ def plotAtomPositions(ax, nuclei):
 		ax.scatter(nucleus.pos[0] * scaleup, nucleus.pos[1] * scaleup, nucleus.pos[2] * scaleup, color = "black")
 
 
-def plotMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, lattice_shape = (20,20,20), buffer = 1.0, num_cols = 3):
+def plotMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, lattice_shape = (40,40,40), buffer = 1.0, num_cols = 3):
 	fig = plt.figure()
 	num_plots = eigenvalues.shape[0]
 	num_rows = math.ceil(num_plots / num_cols)
@@ -91,7 +91,7 @@ def plotMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, lattice
 		plot_index += 1
 	plt.show()
 
-def plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, lattice_shape = (20,20,20), buffer = 1.0, num_cols = 3, plus_extra = 0):
+def plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, lattice_shape = (40,40,40), buffer = 1.0, num_cols = 3, plus_extra = 0):
 	total_electrons = sum([n.charge for n in nuclei])
 	print("Total electrons:", total_electrons)
 	sorted_indicies = np.argsort(eigenvalues)
