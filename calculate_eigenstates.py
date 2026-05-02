@@ -8,7 +8,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("inputfile")
-parser.add_argument("--quantile", type=float, default=0.5)
+parser.add_argument("--quantile", type=float, default=0.90)
 parser.add_argument("--lattice_size", type=int, default=40)
 parser.add_argument("--buffer", type=float, default=1.0)
 parser.add_argument("--orbital_multiplicity", type=int, default=3)
@@ -52,9 +52,9 @@ eigenvalues, eigenvectors = orbtialEigs(nuclei, orbitals, 0.01 * bohr_radius)
 print("Calculated MO coeffs")
 
 print("Eigenvalues (eV):", np.sort(eigenvalues) / charge_e)
-print("Eigenvectors:")
-for i in np.argsort(eigenvalues):
-	print(eigenvectors[i])
+#print("Eigenvectors:")
+#for i in np.argsort(eigenvalues):
+	#print(eigenvectors[i])
 	#print(np.round(eigenvectors[i], 4))
 print("Total Occupied Energy (eV):", occupiedElectronEnergy(eigenvalues, nuclei) / charge_e)
 
