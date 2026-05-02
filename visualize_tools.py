@@ -99,3 +99,12 @@ def plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5,
 	print("Occupied Eigenstate Energies (eV):", eigenvalues[occupied_indicies] / charge_e)
 	#print("Occupied Eigenvectors:", eigenvectors[occupied_indicies])
 	plotMOs(eigenvalues[occupied_indicies], eigenvectors[occupied_indicies], orbitals, nuclei, quantile, lattice_shape, buffer, num_cols)
+
+
+def plotFrontierMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile = 0.5, lattice_shape = (40,40,40), buffer = 1.0, num_cols = 3, num_frontier = 0):
+	total_electrons = sum([n.charge for n in nuclei])
+	print("Total electrons:", total_electrons)
+	sorted_indicies = np.argsort(eigenvalues)
+	frontier_indicies = sorted_indicies[total_electrons//2 - num_frontier: total_electrons//2 + num_frontier]
+	print("Frontier Eigenstate Energies (eV):", eigenvalues[frontier_indicies] / charge_e)
+	plotMOs(eigenvalues[frontier_indicies], eigenvectors[frontier_indicies], orbitals, nuclei, quantile, lattice_shape, buffer, num_cols)

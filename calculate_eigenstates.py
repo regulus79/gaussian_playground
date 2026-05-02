@@ -12,6 +12,8 @@ parser.add_argument("--quantile", type=float, default=0.5)
 parser.add_argument("--lattice_size", type=int, default=40)
 parser.add_argument("--buffer", type=float, default=1.0)
 parser.add_argument("--orbital_multiplicity", type=int, default=3)
+parser.add_argument("--plot", type=str, choices=["occupied", "homo_lumo"], default="homo_lumo")
+parser.add_argument("--num_frontier", type=int, default=4)
 args = parser.parse_args()
 print(f"Parsing file {args.inputfile}")
 
@@ -24,7 +26,7 @@ with open(args.inputfile, "r") as file:
 print("Atom positions (m):", atom_positions)
 print("Atom charges:", atom_charges)
 
-# Somewhat arbitrary values
+# Somewhat arbitrary values for how large the gaussian basis functions should be initially
 exponent = 0.2 / bohr_radius**2
 # Generate more gaussians with different exponents
 exponent_factors = []#[2**0, 2**0.5, 2**1, 2**1.5, 2**2, 2**2.5, 2**3, 2**4, 2**5, 2**6, 2**8, 2**10]
@@ -57,4 +59,7 @@ for i in np.argsort(eigenvalues):
 print("Total Occupied Energy (eV):", occupiedElectronEnergy(eigenvalues, nuclei) / charge_e)
 
 #plotMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile=args.quantile, lattice_shape=(args.lattice_size, args.lattice_size, args.lattice_size), buffer=args.buffer, num_cols=4)
-plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile=args.quantile, lattice_shape=(args.lattice_size, args.lattice_size, args.lattice_size), buffer=args.buffer, num_cols=4, plus_extra = 2)
+if args.plot == "occupied":
+	plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile=args.quantile, lattice_shape=(args.lattice_size, args.lattice_size, args.lattice_size), buffer=args.buffer, num_cols=4, plus_extra = 0)
+elif args.plot == "homo_lumo":
+	plotFrontierMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile=args.quantile, lattice_shape=(args.lattice_size, args.lattice_size, args.lattice_size), buffer=args.buffer, num_cols=4, num_frontier = args.num_frontier)
