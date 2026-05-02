@@ -15,3 +15,5 @@ Carbon dioxide (CO2) is a linear molecule with two double bonds between the atom
 python calculate_eigenstates.py example_xyz_files/carbon_dioxide.xyz --quantile 0.99 --plot occupied
 ```
 
+<img width="1472" height="806" alt="image" src="https://github.com/user-attachments/assets/45efa76b-6838-4159-b2e8-1ee200929d65" />
+
