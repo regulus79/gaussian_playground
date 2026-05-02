@@ -13,6 +13,7 @@ parser.add_argument("--lattice_size", type=int, default=40)
 parser.add_argument("--buffer", type=float, default=1.0)
 parser.add_argument("--orbital_multiplicity", type=int, default=3)
 parser.add_argument("--plot", type=str, choices=["occupied", "homo_lumo"], default="homo_lumo")
+parser.add_argument("--extra_unoccipied", type=int, default=0)
 parser.add_argument("--num_frontier", type=int, default=4)
 args = parser.parse_args()
 print(f"Parsing file {args.inputfile}")
@@ -60,6 +61,6 @@ print("Total Occupied Energy (eV):", occupiedElectronEnergy(eigenvalues, nuclei)
 
 #plotMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile=args.quantile, lattice_shape=(args.lattice_size, args.lattice_size, args.lattice_size), buffer=args.buffer, num_cols=4)
 if args.plot == "occupied":
-	plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile=args.quantile, lattice_shape=(args.lattice_size, args.lattice_size, args.lattice_size), buffer=args.buffer, num_cols=4, plus_extra = 0)
+	plotOccupiedMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile=args.quantile, lattice_shape=(args.lattice_size, args.lattice_size, args.lattice_size), buffer=args.buffer, num_cols=4, plus_extra = args.extra_unoccipied)
 elif args.plot == "homo_lumo":
 	plotFrontierMOs(eigenvalues, eigenvectors, orbitals, nuclei, quantile=args.quantile, lattice_shape=(args.lattice_size, args.lattice_size, args.lattice_size), buffer=args.buffer, num_cols=4, num_frontier = args.num_frontier)

@@ -41,12 +41,14 @@ Optional:
 	--quantile 0.9
 	--plot [occupied or homo_lumo]
 	--num_frontier 2
+	--extra_unoccipied 0
 	--orbital_multiplicity 3
 	--lattice_size 40
 	--buffer 1.0
 ```
 
-By default, the highest occupied molecular orbital (HOMO) and the lowest unoccipied molecular orbital (LUMO) are plotted, along with 3 extra orbitals above and below. This can be changed with `--num_frontier n`, which will show n occupied and unoccipied orbitals above and below. Additionally, `--plot occupied` will show all occupied orbitals.
+By default, the highest occupied molecular orbital (HOMO) and the lowest unoccipied molecular orbital (LUMO) are plotted, along with 3 extra orbitals above and below. This can be changed with `--num_frontier n`, which will show n occupied and unoccipied orbitals above and below.
+Additionally, `--plot occupied` will show all occupied orbitals. In this mode, `--extra_unoccipied` controls how many higher energy, unoccipied orbitals will be shown in addition to the occupied.
 
 By default, 3 gaussians per orbital shape are used with different exponents, to provide a better basis set for approximating the true shape of the eigenstates. This number can be changed with `--orbital_multiplicity`.
 
