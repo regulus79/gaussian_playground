@@ -21,6 +21,16 @@ python calculate_eigenstates.py example_xyz_files/carbon_dioxide.xyz --quantile 
 
 <img width="1472" height="806" alt="image" src="https://github.com/user-attachments/assets/45efa76b-6838-4159-b2e8-1ee200929d65" />
 
+### Water
+
+Water (H2O) is a bent molecule, with an electronegative oxygen atom singly-bonded to two hydrogen atoms.
+
+```
+python calculate_eigenstates.py example_xyz_files/water.xyz --quantile 0.80 --plot occupied --extra_unoccipied 2
+```
+
+<img width="1530" height="819" alt="image" src="https://github.com/user-attachments/assets/fba14071-69c5-44bc-8569-a77ff0f190f6" />
+
 
 ## Usage
 
