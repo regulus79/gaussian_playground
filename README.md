@@ -21,7 +21,7 @@ python calculate_eigenstates.py example_xyz_files/carbon_dioxide.xyz --quantile 
 
 <img width="1472" height="806" alt="image" src="https://github.com/user-attachments/assets/45efa76b-6838-4159-b2e8-1ee200929d65" />
 
-### Water
+### Water (H2O)
 
 ```
 python calculate_eigenstates.py example_xyz_files/water.xyz --quantile 0.80 --plot occupied --extra_unoccipied 2
