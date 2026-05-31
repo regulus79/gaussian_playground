@@ -23,8 +23,6 @@ python calculate_eigenstates.py example_xyz_files/carbon_dioxide.xyz --quantile 
 
 ### Water
 
-Water (H2O) is a bent molecule, with an electronegative oxygen atom singly-bonded to two hydrogen atoms.
-
 ```
 python calculate_eigenstates.py example_xyz_files/water.xyz --quantile 0.80 --plot occupied --extra_unoccipied 2
 ```
